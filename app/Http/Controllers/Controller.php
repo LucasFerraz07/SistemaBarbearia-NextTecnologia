@@ -16,6 +16,10 @@ use OpenApi\Attributes as OA;
     scheme: 'bearer',
     bearerFormat: 'JWT'
 )]
+#[OA\Server(
+    url: 'http://localhost:8000',
+    description: 'Servidor local de desenvolvimento'
+)]
 abstract class Controller
 {
     //
