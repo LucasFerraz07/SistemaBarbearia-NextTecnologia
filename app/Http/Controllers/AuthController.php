@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
+use App\Models\City;
 use App\Models\Client;
 use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
@@ -19,14 +22,14 @@ class AuthController extends Controller
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['name', 'email', 'password', 'phone', 'address', 'city'],
+                required: ['name', 'email', 'password', 'phone', 'cep', 'number'],
                 properties: [
                     new OA\Property(property: 'name',     type: 'string'),
                     new OA\Property(property: 'email',    type: 'string'),
                     new OA\Property(property: 'password', type: 'string'),
                     new OA\Property(property: 'phone',    type: 'string'),
-                    new OA\Property(property: 'address',  type: 'string'),
-                    new OA\Property(property: 'city',     type: 'string'),
+                    new OA\Property(property: 'cep',      type: 'string'),
+                    new OA\Property(property: 'number',   type: 'string'),
                 ]
             )
         ),
@@ -42,9 +45,17 @@ class AuthController extends Controller
             'email'    => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'phone'    => 'required|string|max:20',
-            'address'  => 'required|string|max:255',
-            'city'     => 'required|string|max:100',
+            'cep'      => 'required|string|max:9',
+            'number'   => 'required|string|max:20',
         ]);
+
+        $viaCep = Http::get("https://viacep.com.br/ws/{$validated['cep']}/json/");
+
+        if ($viaCep->failed() || isset($viaCep->json()['erro'])) {
+            return response()->json(['message' => 'CEP não encontrado'], 422);
+        }
+
+        $cepData = $viaCep->json();
 
         $clientType = UserType::where('name', 'cliente')->firstOrFail();
 
@@ -55,14 +66,23 @@ class AuthController extends Controller
             'user_type_id' => $clientType->id,
         ]);
 
-        Client::create([
-            'user_id' => $user->id,
-            'phone'   => $validated['phone'],
-            'address' => $validated['address'],
-            'city'    => $validated['city'],
+        $city = City::firstOrCreate(['name' => $cepData['localidade']]);
+
+        $address = Address::create([
+            'city_id'      => $city->id,
+            'street'       => $cepData['logradouro'],
+            'number'       => $validated['number'],
+            'neighborhood' => $cepData['bairro'],
+            'cep'          => $validated['cep'],
         ]);
 
-        return response()->json($user->load('client'), 201);
+        Client::create([
+            'user_id'    => $user->id,
+            'phone'      => $validated['phone'],
+            'address_id' => $address->id,
+        ]);
+
+        return response()->json($user->load('client.address.city'), 201);
     }
 
     #[OA\Post(
