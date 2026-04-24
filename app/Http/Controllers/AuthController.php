@@ -3,18 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
-use App\Models\City;
-use App\Models\Client;
-use App\Models\User;
-use App\Models\UserType;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use App\Models\User;
 use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    public function __construct(private AuthService $authService) {}
+
     #[OA\Post(
         path: '/api/register',
         summary: 'Cadastro de cliente',
@@ -49,40 +47,9 @@ class AuthController extends Controller
             'number'   => 'required|string|max:20',
         ]);
 
-        $viaCep = Http::get("https://viacep.com.br/ws/{$validated['cep']}/json/");
+        $user = $this->authService->register($validated);
 
-        if ($viaCep->failed() || isset($viaCep->json()['erro'])) {
-            return response()->json(['message' => 'CEP não encontrado'], 422);
-        }
-
-        $cepData = $viaCep->json();
-
-        $clientType = UserType::where('name', 'cliente')->firstOrFail();
-
-        $user = User::create([
-            'name'         => $validated['name'],
-            'email'        => $validated['email'],
-            'password'     => $validated['password'],
-            'user_type_id' => $clientType->id,
-        ]);
-
-        $city = City::firstOrCreate(['name' => $cepData['localidade']]);
-
-        $address = Address::create([
-            'city_id'      => $city->id,
-            'street'       => $cepData['logradouro'],
-            'number'       => $validated['number'],
-            'neighborhood' => $cepData['bairro'],
-            'cep'          => $validated['cep'],
-        ]);
-
-        Client::create([
-            'user_id'    => $user->id,
-            'phone'      => $validated['phone'],
-            'address_id' => $address->id,
-        ]);
-
-        return response()->json($user->load('client.address.city'), 201);
+        return response()->json($user, 201);
     }
 
     #[OA\Post(

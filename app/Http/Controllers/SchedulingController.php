@@ -3,20 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Mail\NewSchedulingNotification;
-use App\Mail\SchedulingCancelledNotification;
-use App\Mail\SchedulingUpdatedNotification;
 use App\Models\Scheduling;
-use App\Models\User;
-use App\Models\UserType;
-use Carbon\Carbon;
+use App\Services\SchedulingService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use OpenApi\Attributes as OA;
 
 class SchedulingController extends Controller
 {
+    public function __construct(private SchedulingService $schedulingService) {}
+
     #[OA\Get(
         path: '/api/schedulings',
         summary: 'Listar agendamentos',
@@ -30,9 +25,7 @@ class SchedulingController extends Controller
     )]
     public function index()
     {
-        $schedulings = Scheduling::select('id', 'start_date', 'end_date')->get();
-
-        return response()->json($schedulings, 200);
+        return response()->json($this->schedulingService->index(), 200);
     }
 
     #[OA\Get(
@@ -53,7 +46,7 @@ class SchedulingController extends Controller
     )]
     public function show(Request $request, $id)
     {
-        $scheduling = Scheduling::with('client.user')->find($id);
+        $scheduling = $this->schedulingService->show((int) $id);
 
         if (!$scheduling) {
             return response()->json(['message' => 'Agendamento não encontrado'], 404);
@@ -95,33 +88,7 @@ class SchedulingController extends Controller
             'start_date' => 'required|date',
         ]);
 
-        $endDate = Carbon::parse($validated['start_date'])->addMinutes(90);
-
-        $scheduling = DB::transaction(function () use ($validated, $endDate) {
-            $conflict = Scheduling::lockForUpdate()
-                ->where('start_date', '<', $endDate)
-                ->where('end_date', '>', $validated['start_date'])
-                ->exists();
-
-            if ($conflict) {
-                abort(422, 'Horário já está reservado');
-            }
-
-            return Scheduling::create([
-                'client_id'  => $validated['client_id'],
-                'start_date' => $validated['start_date'],
-                'end_date'   => $endDate,
-            ]);
-        });
-
-        $scheduling->load('client.user');
-
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-        $admins = User::where('user_type_id', $adminType->id)->get();
-
-        foreach ($admins as $admin) {
-            Mail::to($admin->email)->send(new NewSchedulingNotification($scheduling));
-        }
+        $scheduling = $this->schedulingService->store($validated);
 
         return response()->json($scheduling, 201);
     }
@@ -157,7 +124,7 @@ class SchedulingController extends Controller
             'start_date' => 'sometimes|date',
         ]);
 
-        $scheduling = Scheduling::find($id);
+        $scheduling = $this->schedulingService->show((int) $id);
 
         if (!$scheduling) {
             return response()->json(['message' => 'Agendamento não encontrado'], 404);
@@ -167,35 +134,7 @@ class SchedulingController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        DB::transaction(function () use ($validated, $scheduling, $id) {
-            if (isset($validated['start_date'])) {
-                $endDate = Carbon::parse($validated['start_date'])->addMinutes(90);
-
-                $conflict = Scheduling::lockForUpdate()
-                    ->where('id', '!=', $id)
-                    ->where('start_date', '<', $endDate)
-                    ->where('end_date', '>', $validated['start_date'])
-                    ->exists();
-
-                if ($conflict) {
-                    abort(422, 'Horário já está reservado');
-                }
-
-                $scheduling->update([
-                    'start_date' => $validated['start_date'],
-                    'end_date'   => $endDate,
-                ]);
-            }
-        });
-
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-        $admins = User::where('user_type_id', $adminType->id)->get();
-
-        $updated = $scheduling->fresh()->load('client.user');
-
-        foreach ($admins as $admin) {
-            Mail::to($admin->email)->send(new SchedulingUpdatedNotification($updated));
-        }
+        $updated = $this->schedulingService->update((int) $id, $validated);
 
         return response()->json($updated, 200);
     }
@@ -218,7 +157,7 @@ class SchedulingController extends Controller
     )]
     public function destroy(Request $request, $id)
     {
-        $scheduling = Scheduling::find($id);
+        $scheduling = $this->schedulingService->show((int) $id);
 
         if (!$scheduling) {
             return response()->json(['message' => 'Agendamento não encontrado'], 404);
@@ -228,16 +167,7 @@ class SchedulingController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        $scheduling->load('client.user');
-
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-        $admins = User::where('user_type_id', $adminType->id)->get();
-
-        foreach ($admins as $admin) {
-            Mail::to($admin->email)->send(new SchedulingCancelledNotification($scheduling));
-        }
-
-        $scheduling->delete();
+        $this->schedulingService->destroy((int) $id);
 
         return response()->json(['message' => 'Agendamento removido com sucesso'], 200);
     }

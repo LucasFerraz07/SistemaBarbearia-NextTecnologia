@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\UserType;
+use App\Services\AdminService;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class AdminController extends Controller
 {
+    public function __construct(private AdminService $adminService) {}
+
     #[OA\Get(
         path: '/api/admins',
         summary: 'Listar administradores',
@@ -22,13 +23,7 @@ class AdminController extends Controller
     )]
     public function index()
     {
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-
-        $admins = User::where('user_type_id', $adminType->id)
-            ->with('userType')
-            ->get();
-
-        return response()->json($admins, 200);
+        return response()->json($this->adminService->index(), 200);
     }
 
     #[OA\Post(
@@ -61,16 +56,7 @@ class AdminController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-
-        $admin = User::create([
-            'name'         => $validated['name'],
-            'email'        => $validated['email'],
-            'password'     => $validated['password'],
-            'user_type_id' => $adminType->id,
-        ]);
-
-        return response()->json($admin, 201);
+        return response()->json($this->adminService->store($validated), 201);
     }
 
     #[OA\Get(
@@ -89,11 +75,7 @@ class AdminController extends Controller
     )]
     public function show($id)
     {
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-
-        $admin = User::where('id', $id)
-            ->where('user_type_id', $adminType->id)
-            ->first();
+        $admin = $this->adminService->show((int) $id);
 
         if (!$admin) {
             return response()->json(['message' => 'Administrador não encontrado'], 404);
@@ -134,17 +116,11 @@ class AdminController extends Controller
             'password' => 'sometimes|string|min:8',
         ]);
 
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
-
-        $admin = User::where('id', $id)
-            ->where('user_type_id', $adminType->id)
-            ->first();
+        $admin = $this->adminService->update((int) $id, $validated);
 
         if (!$admin) {
             return response()->json(['message' => 'Administrador não encontrado'], 404);
         }
-
-        $admin->update($validated);
 
         return response()->json($admin, 200);
     }
@@ -165,17 +141,11 @@ class AdminController extends Controller
     )]
     public function destroy($id)
     {
-        $adminType = UserType::where('name', 'administrador')->firstOrFail();
+        $deleted = $this->adminService->destroy((int) $id);
 
-        $admin = User::where('id', $id)
-            ->where('user_type_id', $adminType->id)
-            ->first();
-
-        if (!$admin) {
+        if (!$deleted) {
             return response()->json(['message' => 'Administrador não encontrado'], 404);
         }
-
-        $admin->delete();
 
         return response()->json(['message' => 'Administrador removido com sucesso'], 200);
     }

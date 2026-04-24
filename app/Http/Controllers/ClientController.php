@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\City;
 use App\Models\Client;
+use App\Services\ClientService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use OpenApi\Attributes as OA;
 
 class ClientController extends Controller
 {
+    public function __construct(private ClientService $clientService) {}
+
     #[OA\Get(
         path: '/api/clients',
         summary: 'Listar clientes',
@@ -28,9 +29,7 @@ class ClientController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        $clients = Client::with('user', 'address.city')->get();
-
-        return response()->json($clients, 200);
+        return response()->json($this->clientService->index(), 200);
     }
 
     #[OA\Get(
@@ -50,7 +49,7 @@ class ClientController extends Controller
     )]
     public function show(Request $request, $id)
     {
-        $client = Client::with('user', 'address.city')->find($id);
+        $client = $this->clientService->show((int) $id);
 
         if (!$client) {
             return response()->json(['message' => 'Cliente não encontrado'], 404);
@@ -101,7 +100,7 @@ class ClientController extends Controller
             'number' => 'sometimes|string|max:20',
         ]);
 
-        $client = Client::find($id);
+        $client = $this->clientService->show((int) $id);
 
         if (!$client) {
             return response()->json(['message' => 'Cliente não encontrado'], 404);
@@ -111,40 +110,9 @@ class ClientController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        if (isset($validated['cep']) || isset($validated['number'])) {
-            $cep = $validated['cep'] ?? $client->address->cep;
-            $number = $validated['number'] ?? $client->address->number;
+        $updated = $this->clientService->update((int) $id, $validated);
 
-            $viaCep = Http::get("https://viacep.com.br/ws/{$cep}/json/");
-
-            if ($viaCep->failed() || isset($viaCep->json()['erro'])) {
-                return response()->json(['message' => 'CEP não encontrado'], 422);
-            }
-
-            $cepData = $viaCep->json();
-            $city = City::firstOrCreate(['name' => $cepData['localidade']]);
-
-            $client->address->update([
-                'city_id'      => $city->id,
-                'street'       => $cepData['logradouro'],
-                'number'       => $number,
-                'neighborhood' => $cepData['bairro'],
-                'cep'          => $cep,
-            ]);
-        }
-
-        if (isset($validated['name']) || isset($validated['email'])) {
-            $client->user->update(array_filter([
-                'name'  => $validated['name']  ?? null,
-                'email' => $validated['email'] ?? null,
-            ]));
-        }
-
-        if (isset($validated['phone'])) {
-            $client->update(['phone' => $validated['phone']]);
-        }
-
-        return response()->json($client->load('user', 'address.city'), 200);
+        return response()->json($updated, 200);
     }
 
     #[OA\Delete(
@@ -164,7 +132,7 @@ class ClientController extends Controller
     )]
     public function destroy(Request $request, $id)
     {
-        $client = Client::find($id);
+        $client = $this->clientService->show((int) $id);
 
         if (!$client) {
             return response()->json(['message' => 'Cliente não encontrado'], 404);
@@ -174,7 +142,7 @@ class ClientController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        $client->delete();
+        $this->clientService->destroy((int) $id);
 
         return response()->json(['message' => 'Cliente removido com sucesso'], 200);
     }
