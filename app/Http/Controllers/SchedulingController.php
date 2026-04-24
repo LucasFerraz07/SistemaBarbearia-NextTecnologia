@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewSchedulingNotification;
+use App\Mail\SchedulingCancelledNotification;
+use App\Mail\SchedulingUpdatedNotification;
 use App\Models\Scheduling;
 use App\Models\User;
 use App\Models\UserType;
@@ -186,7 +188,16 @@ class SchedulingController extends Controller
             }
         });
 
-        return response()->json($scheduling->fresh(), 200);
+        $adminType = UserType::where('name', 'administrador')->firstOrFail();
+        $admins = User::where('user_type_id', $adminType->id)->get();
+
+        $updated = $scheduling->fresh()->load('client.user');
+
+        foreach ($admins as $admin) {
+            Mail::to($admin->email)->send(new SchedulingUpdatedNotification($updated));
+        }
+
+        return response()->json($updated, 200);
     }
 
     #[OA\Delete(
@@ -215,6 +226,15 @@ class SchedulingController extends Controller
 
         if (!$this->isAdminOrOwner($request, $scheduling)) {
             return response()->json(['message' => 'Acesso não autorizado'], 403);
+        }
+
+        $scheduling->load('client.user');
+
+        $adminType = UserType::where('name', 'administrador')->firstOrFail();
+        $admins = User::where('user_type_id', $adminType->id)->get();
+
+        foreach ($admins as $admin) {
+            Mail::to($admin->email)->send(new SchedulingCancelledNotification($scheduling));
         }
 
         $scheduling->delete();
