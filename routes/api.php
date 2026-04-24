@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Route;
 
 // Rotas públicas
@@ -11,6 +12,9 @@ Route::post('/login', [AuthController::class, 'login']);
 // Rotas autenticadas
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Clientes
+    Route::apiResource('clients', ClientController::class)->except(['store']);
 
     // Administradores
     Route::middleware('admin')->group(function () {
