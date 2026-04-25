@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreAdminRequest;
+use App\Http\Requests\Admin\UpdateAdminRequest;
 use App\Services\AdminService;
-use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 
 class AdminController extends Controller
@@ -48,15 +49,9 @@ class AdminController extends Controller
             new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
-    public function store(Request $request)
+    public function store(StoreAdminRequest $request)
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-        ]);
-
-        return response()->json($this->adminService->store($validated), 201);
+        return response()->json($this->adminService->store($request->validated()), 201);
     }
 
     #[OA\Get(
@@ -108,15 +103,9 @@ class AdminController extends Controller
             new OA\Response(response: 404, description: 'Administrador não encontrado'),
         ]
     )]
-    public function update(Request $request, $id)
+    public function update(UpdateAdminRequest $request, $id)
     {
-        $validated = $request->validate([
-            'name'     => 'sometimes|string|max:255',
-            'email'    => 'sometimes|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'sometimes|string|min:8',
-        ]);
-
-        $admin = $this->adminService->update((int) $id, $validated);
+        $admin = $this->adminService->update((int) $id, $request->validated());
 
         if (!$admin) {
             return response()->json(['message' => 'Administrador não encontrado'], 404);

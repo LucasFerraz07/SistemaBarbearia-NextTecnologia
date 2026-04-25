@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\UpdateClientRequest;
 use App\Models\Client;
 use App\Services\ClientService;
 use Illuminate\Http\Request;
@@ -90,16 +91,8 @@ class ClientController extends Controller
             new OA\Response(response: 422, description: 'CEP não encontrado ou erro de validação'),
         ]
     )]
-    public function update(Request $request, $id)
+    public function update(UpdateClientRequest $request, $id)
     {
-        $validated = $request->validate([
-            'name'   => 'sometimes|string|max:255',
-            'email'  => 'sometimes|string|email|max:255|unique:users,email,' . $id,
-            'phone'  => 'sometimes|string|max:20',
-            'cep'    => 'sometimes|string|max:9',
-            'number' => 'sometimes|string|max:20',
-        ]);
-
         $client = $this->clientService->show((int) $id);
 
         if (!$client) {
@@ -110,7 +103,7 @@ class ClientController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        $updated = $this->clientService->update((int) $id, $validated);
+        $updated = $this->clientService->update((int) $id, $request->validated());
 
         return response()->json($updated, 200);
     }

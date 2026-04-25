@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Scheduling\StoreSchedulingRequest;
+use App\Http\Requests\Scheduling\UpdateSchedulingRequest;
 use App\Models\Scheduling;
 use App\Services\SchedulingService;
 use Illuminate\Http\Request;
@@ -81,14 +83,10 @@ class SchedulingController extends Controller
             new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
-    public function store(Request $request)
+    public function store(StoreSchedulingRequest $request)
     {
         $isClient = $request->user()?->userType?->name === 'cliente';
-
-        $validated = $request->validate([
-            'client_id'  => $isClient ? 'nullable|integer' : 'required|integer|exists:clients,id',
-            'start_date' => 'required|date',
-        ]);
+        $validated = $request->validated();
 
         if ($isClient) {
             $client = $request->user()->client;
@@ -130,12 +128,8 @@ class SchedulingController extends Controller
             new OA\Response(response: 422, description: 'Erro de validação'),
         ]
     )]
-    public function update(Request $request, $id)
+    public function update(UpdateSchedulingRequest $request, $id)
     {
-        $validated = $request->validate([
-            'start_date' => 'sometimes|date',
-        ]);
-
         $scheduling = $this->schedulingService->show((int) $id);
 
         if (!$scheduling) {
@@ -146,7 +140,7 @@ class SchedulingController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
-        $updated = $this->schedulingService->update((int) $id, $validated);
+        $updated = $this->schedulingService->update((int) $id, $request->validated());
 
         return response()->json($updated, 200);
     }
