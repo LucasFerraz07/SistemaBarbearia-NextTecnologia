@@ -25,9 +25,17 @@ class SchedulingController extends Controller
             new OA\Response(response: 401, description: 'Não autenticado'),
         ]
     )]
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json($this->schedulingService->index(), 200);
+        $filters = $request->only(['client_id', 'start_date', 'end_date']);
+
+        $isClient = $request->user()?->userType?->name === 'cliente';
+
+        if ($isClient && $request->has('client_id')) {
+            $filters['client_id'] = $request->user()->client->id;
+        }
+
+        return response()->json($this->schedulingService->index($filters), 200);
     }
 
     #[OA\Get(

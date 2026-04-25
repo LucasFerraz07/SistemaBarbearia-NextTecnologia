@@ -15,9 +15,23 @@ use Illuminate\Support\Facades\Mail;
 
 class SchedulingService
 {
-    public function index(): LengthAwarePaginator
+    public function index(array $filters = []): LengthAwarePaginator
     {
-        return Scheduling::select('id', 'start_date', 'end_date')->paginate(10);
+        $query = Scheduling::select('id', 'start_date', 'end_date');
+
+        if (!empty($filters['client_id'])) {
+            $query->where('client_id', $filters['client_id']);
+        }
+
+        if (!empty($filters['start_date'])) {
+            $query->where('start_date', '>=', $filters['start_date']);
+        }
+
+        if (!empty($filters['end_date'])) {
+            $query->where('end_date', '<=', $filters['end_date']);
+        }
+
+        return $query->paginate(10);
     }
 
     public function show(int $id): ?Scheduling
