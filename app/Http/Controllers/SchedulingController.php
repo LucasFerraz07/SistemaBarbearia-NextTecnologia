@@ -83,10 +83,22 @@ class SchedulingController extends Controller
     )]
     public function store(Request $request)
     {
+        $isClient = $request->user()?->userType?->name === 'cliente';
+
         $validated = $request->validate([
-            'client_id'  => 'required|integer|exists:clients,id',
+            'client_id'  => $isClient ? 'nullable|integer' : 'required|integer|exists:clients,id',
             'start_date' => 'required|date',
         ]);
+
+        if ($isClient) {
+            $client = $request->user()->client;
+
+            if (!$client) {
+                return response()->json(['message' => 'Perfil de cliente não encontrado'], 404);
+            }
+
+            $validated['client_id'] = $client->id;
+        }
 
         $scheduling = $this->schedulingService->store($validated);
 
