@@ -124,9 +124,9 @@ class SchedulingService
         $admins = User::where('user_type_id', $adminType->id)->get();
 
         $mail = match ($event) {
-            'new'       => fn ($admin) => Mail::to($admin->email)->send(new NewSchedulingNotification($scheduling)),
-            'updated'   => fn ($admin) => Mail::to($admin->email)->send(new SchedulingUpdatedNotification($scheduling)),
-            'cancelled' => fn ($admin) => Mail::to($admin->email)->send(new SchedulingCancelledNotification($scheduling)),
+            'new'       => fn ($admin) => Mail::to($admin->email)->queue(new NewSchedulingNotification($scheduling)),
+            'updated'   => fn ($admin) => Mail::to($admin->email)->queue(new SchedulingUpdatedNotification($scheduling)),
+            'cancelled' => fn ($admin) => Mail::to($admin->email)->queue(new SchedulingCancelledNotification($scheduling)),
         };
 
         foreach ($admins as $admin) {
