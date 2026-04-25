@@ -9,15 +9,15 @@ use App\Models\Scheduling;
 use App\Models\User;
 use App\Models\UserType;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class SchedulingService
 {
-    public function index(): Collection
+    public function index(): LengthAwarePaginator
     {
-        return Scheduling::select('id', 'start_date', 'end_date')->get();
+        return Scheduling::select('id', 'start_date', 'end_date')->paginate(10);
     }
 
     public function show(int $id): ?Scheduling

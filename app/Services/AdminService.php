@@ -4,17 +4,17 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\UserType;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminService
 {
-    public function index(): Collection
+    public function index(): LengthAwarePaginator
     {
         $adminType = UserType::where('name', 'administrador')->firstOrFail();
 
         return User::where('user_type_id', $adminType->id)
             ->with('userType')
-            ->get();
+            ->paginate(10);
     }
 
     public function store(array $data): User

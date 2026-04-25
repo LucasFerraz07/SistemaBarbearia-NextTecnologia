@@ -4,14 +4,14 @@ namespace App\Services;
 
 use App\Models\City;
 use App\Models\Client;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 
 class ClientService
 {
-    public function index(): Collection
+    public function index(): LengthAwarePaginator
     {
-        return Client::with('user', 'address.city')->get();
+        return Client::with('user', 'address.city')->paginate(10);
     }
 
     public function show(int $id): ?Client
