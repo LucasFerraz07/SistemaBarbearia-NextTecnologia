@@ -124,12 +124,46 @@
                     }
                 ]
             },
-            "put": {
+            "delete": {
+                "tags": [
+                    "Administradores"
+                ],
+                "summary": "Remover administrador",
+                "operationId": "4bd429e640a5c6ec94b1dd9c44369866",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Administrador removido com sucesso"
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado"
+                    },
+                    "404": {
+                        "description": "Administrador não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
                 "tags": [
                     "Administradores"
                 ],
                 "summary": "Atualizar administrador",
-                "operationId": "d1fe95b300f5938f417f9d84f001d509",
+                "operationId": "7b70b418441e9491858e6600b20e1395",
                 "parameters": [
                     {
                         "name": "id",
@@ -168,40 +202,6 @@
                 "responses": {
                     "200": {
                         "description": "Administrador atualizado com sucesso"
-                    },
-                    "403": {
-                        "description": "Acesso não autorizado"
-                    },
-                    "404": {
-                        "description": "Administrador não encontrado"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Administradores"
-                ],
-                "summary": "Remover administrador",
-                "operationId": "4bd429e640a5c6ec94b1dd9c44369866",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "example": 1
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Administrador removido com sucesso"
                     },
                     "403": {
                         "description": "Acesso não autorizado"
@@ -400,13 +400,48 @@
                     }
                 ]
             },
-            "put": {
+            "delete": {
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Remover cliente",
+                "description": "Administradores podem remover qualquer cliente. Clientes podem remover apenas a própria conta",
+                "operationId": "c929f14f421a80a896c6fe116ffdc317",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cliente removido com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "404": {
+                        "description": "Cliente não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
                 "tags": [
                     "Clientes"
                 ],
                 "summary": "Atualizar cliente",
                 "description": "Administradores podem atualizar qualquer cliente. Clientes podem atualizar apenas os próprios dados",
-                "operationId": "7d0a5ae9e306858d30e04fc50265d80c",
+                "operationId": "133292236cdc22936c10288abc27810e",
                 "parameters": [
                     {
                         "name": "id",
@@ -462,41 +497,6 @@
                     },
                     "422": {
                         "description": "CEP não encontrado ou erro de validação"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Clientes"
-                ],
-                "summary": "Remover cliente",
-                "description": "Administradores podem remover qualquer cliente. Clientes podem remover apenas a própria conta",
-                "operationId": "c929f14f421a80a896c6fe116ffdc317",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "example": 1
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Cliente removido com sucesso"
-                    },
-                    "401": {
-                        "description": "Não autenticado"
-                    },
-                    "404": {
-                        "description": "Cliente não encontrado"
                     }
                 },
                 "security": [
@@ -617,13 +617,51 @@
                     }
                 ]
             },
-            "put": {
+            "delete": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Remover agendamento",
+                "description": "Administradores podem remover qualquer agendamento. Clientes podem remover apenas os próprios agendamentos",
+                "operationId": "02874a05c8f8e6ba1cd93a8cbd1d4a49",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agendamento removido com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado"
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
                 "tags": [
                     "Agendamentos"
                 ],
                 "summary": "Atualizar agendamento",
                 "description": "Administradores podem atualizar qualquer agendamento. Clientes podem atualizar apenas os próprios agendamentos",
-                "operationId": "8e461909c52c688f81b470e736febd87",
+                "operationId": "309b65a6eec0b760a884f04178bd955d",
                 "parameters": [
                     {
                         "name": "id",
@@ -667,44 +705,6 @@
                     },
                     "422": {
                         "description": "Erro de validação"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Agendamentos"
-                ],
-                "summary": "Remover agendamento",
-                "description": "Administradores podem remover qualquer agendamento. Clientes podem remover apenas os próprios agendamentos",
-                "operationId": "02874a05c8f8e6ba1cd93a8cbd1d4a49",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "example": 1
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Agendamento removido com sucesso"
-                    },
-                    "401": {
-                        "description": "Não autenticado"
-                    },
-                    "403": {
-                        "description": "Acesso não autorizado"
-                    },
-                    "404": {
-                        "description": "Agendamento não encontrado"
                     }
                 },
                 "security": [

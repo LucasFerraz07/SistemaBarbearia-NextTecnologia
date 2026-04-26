@@ -63,7 +63,7 @@ class ClientController extends Controller
         return response()->json($client, 200);
     }
 
-    #[OA\Put(
+    #[OA\Patch(
         path: '/api/clients/{id}',
         summary: 'Atualizar cliente',
         description: 'Administradores podem atualizar qualquer cliente. Clientes podem atualizar apenas os próprios dados',
