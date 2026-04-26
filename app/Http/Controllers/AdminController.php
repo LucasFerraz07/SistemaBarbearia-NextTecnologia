@@ -79,7 +79,7 @@ class AdminController extends Controller
         return response()->json($admin, 200);
     }
 
-    #[OA\Put(
+    #[OA\Patch(
         path: '/api/admins/{id}',
         summary: 'Atualizar administrador',
         security: [['bearerAuth' => []]],

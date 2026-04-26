@@ -111,7 +111,7 @@ class SchedulingController extends Controller
         return response()->json($scheduling, 201);
     }
 
-    #[OA\Put(
+    #[OA\Patch(
         path: '/api/schedulings/{id}',
         summary: 'Atualizar agendamento',
         description: 'Administradores podem atualizar qualquer agendamento. Clientes podem atualizar apenas os próprios agendamentos',
