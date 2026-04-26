@@ -28,7 +28,7 @@ class SchedulingService
         }
 
         if (!empty($filters['end_date'])) {
-            $query->where('end_date', '<=', $filters['end_date']);
+            $query->where('end_date', '<=', $filters['end_date'] . ' 23:59:59');
         }
 
         return $query->paginate(10);

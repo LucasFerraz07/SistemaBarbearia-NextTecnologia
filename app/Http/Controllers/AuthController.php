@@ -24,12 +24,12 @@ class AuthController extends Controller
             content: new OA\JsonContent(
                 required: ['name', 'email', 'password', 'phone', 'cep', 'number'],
                 properties: [
-                    new OA\Property(property: 'name',     type: 'string'),
-                    new OA\Property(property: 'email',    type: 'string'),
-                    new OA\Property(property: 'password', type: 'string'),
-                    new OA\Property(property: 'phone',    type: 'string'),
-                    new OA\Property(property: 'cep',      type: 'string'),
-                    new OA\Property(property: 'number',   type: 'string'),
+                    new OA\Property(property: 'name',     type: 'string', example: 'João Silva'),
+                    new OA\Property(property: 'email',    type: 'string', example: 'joao@email.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'password123'),
+                    new OA\Property(property: 'phone',    type: 'string', example: '12999999999'),
+                    new OA\Property(property: 'cep',      type: 'string', example: '01310100'),
+                    new OA\Property(property: 'number',   type: 'string', example: '1578'),
                 ]
             )
         ),
@@ -54,8 +54,8 @@ class AuthController extends Controller
             content: new OA\JsonContent(
                 required: ['email', 'password'],
                 properties: [
-                    new OA\Property(property: 'email',    type: 'string'),
-                    new OA\Property(property: 'password', type: 'string'),
+                    new OA\Property(property: 'email',    type: 'string', example: 'admin@barbearia.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'password'),
                 ]
             )
         ),

@@ -37,9 +37,9 @@ class AdminController extends Controller
             content: new OA\JsonContent(
                 required: ['name', 'email', 'password'],
                 properties: [
-                    new OA\Property(property: 'name', type: 'string'),
-                    new OA\Property(property: 'email', type: 'string'),
-                    new OA\Property(property: 'password', type: 'string'),
+                    new OA\Property(property: 'name', type: 'string', example: 'Admin Teste'),
+                    new OA\Property(property: 'email', type: 'string', example: 'adminteste@barbearia.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'password123'),
                 ]
             )
         ),
@@ -60,7 +60,7 @@ class AdminController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Administradores'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Dados do administrador'),
@@ -85,15 +85,15 @@ class AdminController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Administradores'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'name', type: 'string'),
-                    new OA\Property(property: 'email', type: 'string'),
-                    new OA\Property(property: 'password', type: 'string'),
+                    new OA\Property(property: 'name', type: 'string', example: 'Admin Atualizado'),
+                    new OA\Property(property: 'email', type: 'string', example: 'adminatualizado@barbearia.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'novasenha123'),
                 ]
             )
         ),
@@ -120,7 +120,7 @@ class AdminController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Administradores'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Administrador removido com sucesso'),

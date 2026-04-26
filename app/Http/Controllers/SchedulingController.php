@@ -45,7 +45,7 @@ class SchedulingController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Agendamentos'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Dados do agendamento'),
@@ -80,8 +80,8 @@ class SchedulingController extends Controller
             content: new OA\JsonContent(
                 required: ['client_id', 'start_date'],
                 properties: [
-                    new OA\Property(property: 'client_id',  type: 'integer'),
-                    new OA\Property(property: 'start_date', type: 'string', format: 'date-time'),
+                    new OA\Property(property: 'client_id',  type: 'integer', example: 1),
+                    new OA\Property(property: 'start_date', type: 'string', format: 'date-time', example: '2026-05-01 10:00:00'),
                 ]
             )
         ),
@@ -118,13 +118,13 @@ class SchedulingController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Agendamentos'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'start_date', type: 'string', format: 'date-time'),
+                    new OA\Property(property: 'start_date', type: 'string', format: 'date-time', example: '2026-05-01 14:00:00'),
                 ]
             )
         ),
@@ -160,7 +160,7 @@ class SchedulingController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Agendamentos'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Agendamento removido com sucesso'),

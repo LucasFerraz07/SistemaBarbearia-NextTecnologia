@@ -40,7 +40,7 @@ class ClientController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Clientes'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Dados do cliente'),
@@ -70,17 +70,17 @@ class ClientController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Clientes'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    new OA\Property(property: 'name',   type: 'string'),
-                    new OA\Property(property: 'email',  type: 'string'),
-                    new OA\Property(property: 'phone',  type: 'string'),
-                    new OA\Property(property: 'cep',    type: 'string'),
-                    new OA\Property(property: 'number', type: 'string'),
+                    new OA\Property(property: 'name',   type: 'string', example: 'João Silva Atualizado'),
+                    new OA\Property(property: 'email',  type: 'string', example: 'joaoatualizado@email.com'),
+                    new OA\Property(property: 'phone',  type: 'string', example: '12988888888'),
+                    new OA\Property(property: 'cep',    type: 'string', example: '01310100'),
+                    new OA\Property(property: 'number', type: 'string', example: '100'),
                 ]
             )
         ),
@@ -115,7 +115,7 @@ class ClientController extends Controller
         security: [['bearerAuth' => []]],
         tags: ['Clientes'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer'), example: 1),
         ],
         responses: [
             new OA\Response(response: 200, description: 'Cliente removido com sucesso'),

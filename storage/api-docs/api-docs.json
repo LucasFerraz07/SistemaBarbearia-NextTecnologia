@@ -54,13 +54,16 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Admin Teste"
                                     },
                                     "email": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "adminteste@barbearia.com"
                                     },
                                     "password": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "password123"
                                     }
                                 },
                                 "type": "object"
@@ -100,7 +103,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -133,7 +137,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "requestBody": {
@@ -143,13 +148,16 @@
                             "schema": {
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "Admin Atualizado"
                                     },
                                     "email": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "adminatualizado@barbearia.com"
                                     },
                                     "password": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "novasenha123"
                                     }
                                 },
                                 "type": "object"
@@ -187,7 +195,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -230,22 +239,28 @@
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "João Silva"
                                     },
                                     "email": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "joao@email.com"
                                     },
                                     "password": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "password123"
                                     },
                                     "phone": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "12999999999"
                                     },
                                     "cep": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "01310100"
                                     },
                                     "number": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "1578"
                                     }
                                 },
                                 "type": "object"
@@ -281,10 +296,12 @@
                                 ],
                                 "properties": {
                                     "email": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "admin@barbearia.com"
                                     },
                                     "password": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "password"
                                     }
                                 },
                                 "type": "object"
@@ -362,7 +379,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -396,7 +414,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "requestBody": {
@@ -406,19 +425,24 @@
                             "schema": {
                                 "properties": {
                                     "name": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "João Silva Atualizado"
                                     },
                                     "email": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "joaoatualizado@email.com"
                                     },
                                     "phone": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "12988888888"
                                     },
                                     "cep": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "01310100"
                                     },
                                     "number": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "example": "100"
                                     }
                                 },
                                 "type": "object"
@@ -460,7 +484,8 @@
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -472,6 +497,214 @@
                     },
                     "404": {
                         "description": "Cliente não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/schedulings": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Listar agendamentos",
+                "description": "Qualquer usuário autenticado pode listar os agendamentos. Retorna id, start_date e end_date",
+                "operationId": "c466aaf5e9612c4cfee1c29557b8bd61",
+                "responses": {
+                    "200": {
+                        "description": "Lista de agendamentos"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Criar agendamento",
+                "description": "Qualquer usuário autenticado pode criar um agendamento. Administradores são notificados por e-mail",
+                "operationId": "1421cd81ac7862571eb2040f99e3da26",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client_id",
+                                    "start_date"
+                                ],
+                                "properties": {
+                                    "client_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-05-01 10:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Agendamento criado com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/schedulings/{id}": {
+            "get": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Buscar agendamento",
+                "description": "Administradores podem ver qualquer agendamento. Clientes podem ver apenas os próprios agendamentos",
+                "operationId": "9c5f7847e6d729ae352482e3fe9fc740",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dados do agendamento"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado"
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Atualizar agendamento",
+                "description": "Administradores podem atualizar qualquer agendamento. Clientes podem atualizar apenas os próprios agendamentos",
+                "operationId": "8e461909c52c688f81b470e736febd87",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-05-01 14:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Agendamento atualizado com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado"
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
+                    },
+                    "422": {
+                        "description": "Erro de validação"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Agendamentos"
+                ],
+                "summary": "Remover agendamento",
+                "description": "Administradores podem remover qualquer agendamento. Clientes podem remover apenas os próprios agendamentos",
+                "operationId": "02874a05c8f8e6ba1cd93a8cbd1d4a49",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Agendamento removido com sucesso"
+                    },
+                    "401": {
+                        "description": "Não autenticado"
+                    },
+                    "403": {
+                        "description": "Acesso não autorizado"
+                    },
+                    "404": {
+                        "description": "Agendamento não encontrado"
                     }
                 },
                 "security": [
@@ -503,6 +736,10 @@
         {
             "name": "Clientes",
             "description": "Clientes"
+        },
+        {
+            "name": "Agendamentos",
+            "description": "Agendamentos"
         }
     ]
 }
